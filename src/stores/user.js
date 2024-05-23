@@ -19,6 +19,11 @@ export default defineStore('user', {
       await userCred.user.updateProfile({
         displayName: values.name
       })
+    },
+    async authenticate(values) {
+      await auth.signInWithEmailAndPassword(values.email, values.password)
+
+      this.userLoggedIn = true
     }
   }
 })
