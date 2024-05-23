@@ -16,6 +16,7 @@
         type="text"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Name"
+        autocomplete="username"
       />
       <ErrorMessage class="text-red-600" name="name" />
     </div>
@@ -27,6 +28,7 @@
         type="email"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Email"
+        autocomplete="email"
       />
       <ErrorMessage class="text-red-600" name="email" />
     </div>
@@ -49,6 +51,7 @@
           placeholder="Password"
           type="password"
           v-bind="field"
+          autocomplete="new-password"
         />
         <div class="text-red-600" v-for="error in errors" :key="error">
           {{ error }}
@@ -64,6 +67,7 @@
         type="password"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Confirm Password"
+        autocomplete="new-password"
       />
       <ErrorMessage class="text-red-600" name="confirm_password" />
     </div>
@@ -103,6 +107,10 @@
 </template>
 
 <script>
+import { auth, usersCollection } from '@/includes/firebase'
+import { mapWritableState } from 'pinia'
+import useUserStore from '@/stores/user'
+
 export default {
   data() {
     return {
@@ -125,16 +133,45 @@ export default {
       reg_alert_msg: 'Please wait! Your account is being created.'
     }
   },
+  computed: {
+    ...mapWritableState(useUserStore, ['userLoggedIn'])
+  },
   methods: {
-    register(values) {
+    async register(values) {
       this.reg_show_alert = true
       this.reg_in_submission = true
       this.reg_alert_variant = 'bg-blue-500'
       this.reg_alert_msg = 'Please wait! Your account is being created.'
 
+      let userCred = null
+      try {
+        userCred = await auth.createUserWithEmailAndPassword(values.email, values.password)
+      } catch (error) {
+        this.reg_in_submission = false
+        this.reg_alert_variant = 'bg-red-500'
+        this.reg_alert_msg = 'An unexpeced error occured. Please try again later.'
+        return
+      }
+
+      try {
+        await usersCollection.add({
+          name: values.name,
+          email: values.email,
+          age: values.age,
+          country: values.country
+        })
+      } catch (error) {
+        this.reg_in_submission = false
+        this.reg_alert_variant = 'bg-red-500'
+        this.reg_alert_msg = 'An unexpeced error occured. Please try again later.'
+        return
+      }
+
+      this.userLoggedIn = true
+
       this.reg_alert_variant = 'bg-green-500'
       this.reg_alert_msg = 'Success! Your account has been created.'
-      console.log(values)
+      console.log(userCred)
     }
   }
 }

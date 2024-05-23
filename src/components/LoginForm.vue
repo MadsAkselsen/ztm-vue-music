@@ -15,6 +15,7 @@
         type="email"
         class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
         placeholder="Enter Email"
+        autocomplete="email"
       />
       <ErrorMessage class="text-red-600" name="email" />
     </div>
@@ -27,6 +28,7 @@
           class="block w-full py-1.5 px-3 text-gray-800 border border-gray-300 transition duration-500 focus:outline-none focus:border-black rounded"
           placeholder="Password"
           v-bind="field"
+          autocomplete="current-password"
         />
         <div class="text-red-600" v-for="error in errors" :key="error">
           {{ error }}
