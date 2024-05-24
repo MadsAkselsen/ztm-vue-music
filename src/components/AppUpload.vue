@@ -51,6 +51,7 @@ export default {
       uploads: []
     }
   },
+  props: ['addSong'],
   methods: {
     upload($event) {
       this.is_dragover = false
@@ -99,7 +100,13 @@ export default {
               comment_count: 0
             }
             song.url = await task.snapshot.ref.getDownloadURL()
-            await songsCollection.add(song)
+            const songRef = await songsCollection.add(song)
+
+            // Fetch the document snapshot
+            const songSnapshot = await songRef.get()
+
+            // Pass the snapshot to addSong
+            this.addSong(songSnapshot)
 
             this.uploads[uploadIndex].variant = 'bg-green-400'
             this.uploads[uploadIndex].icon = 'fas fa-check'
