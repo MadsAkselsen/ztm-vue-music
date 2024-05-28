@@ -50,6 +50,27 @@ describe('SongItem.vue', () => {
     expect(wrapper.text()).toContain(song.display_name)
   })
 
+  test('renders song.docID in id attribute', () => {
+    const song = {
+      display_name: 'test',
+      docID: 'abc',
+      modified_name: 'Test Song',
+      comment_count: 5
+    }
+
+    const wrapper = shallowMount(SongItem, {
+      global: {
+        // plugins: [router],
+        stubs: {
+          RouterLink: RouterLinkStub
+        }
+      },
+      props: { song }
+    })
+
+    expect(wrapper.attributes().id).toBe(`song-id-${song.docID}`)
+  })
+
   test('navigates on comment click', async () => {
     const song = {
       display_name: 'test',
