@@ -5,6 +5,7 @@ import { mount } from '@vue/test-utils'
 // import routes from '@/router/index' // Adjust this import according to your actual router setup
 
 // Custom RouterLinkStub to handle the slot API
+// https://github.com/vuejs/vue-test-utils/issues/1803
 const RouterLinkStub = {
   template: '<a @click="navigate"><slot :navigate="navigate" :href="to"></slot></a>',
   props: ['to'],
